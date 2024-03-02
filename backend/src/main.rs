@@ -17,7 +17,6 @@ fn rocket() -> _ {
     dotenv().ok();
     rocket::build()
         .attach(db::init())
-        .attach(fairings::cors::CORS)
         .mount(
             "/",
             openapi_get_routes![

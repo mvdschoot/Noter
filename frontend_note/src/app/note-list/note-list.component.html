@@ -1,0 +1,28 @@
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+        text-align: left;
+    }
+</style>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Last modified</th>
+        <th>Content</th>
+        <th>URL</th>
+    </tr>
+    @for (note of notes; track $index) {
+        <tr>
+            <td>{{note.id}}</td>
+            <td>{{note.title}}</td>
+            <td>{{note.last_modified}}</td>
+            <td>{{note.content}}</td>
+        </tr>
+    }
+</table>
