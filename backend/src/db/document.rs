@@ -1,13 +1,15 @@
+use std::fmt::format;
+use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use bson::doc;
+use bson::{doc, Bson, Timestamp};
 use bson::oid::ObjectId;
 use futures::stream::StreamExt;
 use mongodb::Database;
 use mongodb::options::FindOptions;
 use crate::errors::response::MyError;
 
-use crate::models::document::{Document, DocumentCreateRequest, DocumentPreviewResponse};
+use crate::models::document::{Document, DocumentCreateRequest, DocumentPreviewResponse, DocumentUpdateRequest, FullDocumentResponse};
 
 pub async fn get_user_documents(
     db: &Database,
@@ -45,9 +47,9 @@ pub async fn create_document(
 ) -> Result<String, MyError> {
     let collection = db.collection::<Document>("document");
 
-    let time: u64;
+    let time: i64;
     if let Ok(t) = SystemTime::now().duration_since(UNIX_EPOCH) {
-        time = t.as_millis() as u64;
+        time = t.as_secs() as i64;
     } else {
         return Err(MyError::build(500, Some("A problem with retrieving the current time".to_string())))
     }
@@ -65,5 +67,63 @@ pub async fn create_document(
         Ok(res.inserted_id.as_object_id().unwrap().to_hex())
     } else {
         Err(MyError::build(500, Some("Cannot insert the document into the data base".to_string())))
+    }
+}
+
+pub async fn update_document(
+    db: &Database,
+    doc: DocumentUpdateRequest
+) -> Result<(), MyError> {
+    let collection = db.collection::<Document>("document");
+
+    let time: i64;
+    if let Ok(t) = SystemTime::now().duration_since(UNIX_EPOCH) {
+        time = t.as_secs() as i64;
+    } else {
+        return Err(MyError::build(500, Some("A problem with retrieving the current time".to_string())))
+    }
+
+    let filter = match ObjectId::from_str(&doc.id) {
+        Ok(obj_id) => doc! {"_id": obj_id},
+        Err(_) => return Err(MyError::build(400, Some(format!("Invalid  ID '{}'", &doc.id))))
+    };
+
+
+    let mut doc_update = doc! {"last_modified": time};
+    if doc.content.is_some() {
+        doc_update.insert("content", doc.content.unwrap());
+    }
+    if doc.title.is_some() {
+        doc_update.insert("title", doc.title.unwrap());
+    }
+
+    if let Ok(_) = collection.update_one(filter, doc! {"$set": doc_update}, None).await {
+        Ok(())
+    } else {
+        Err(MyError::build(500, Some(format!("Cannot update document '{}'", doc.id).to_string())))
+    }
+}
+
+pub async fn get_full_document(
+    db: &Database,
+    id: &str
+) -> Result<FullDocumentResponse, MyError> {
+    let collection = db.collection::<Document>("document");
+
+    let filter = match ObjectId::from_str(id) {
+        Ok(obj_id) => doc! {"_id": obj_id},
+        Err(_) => return Err(MyError::build(400, Some(format!("Invalid  ID '{}'", id))))
+    };
+
+    match collection.find_one(filter, None).await {
+        Ok(Some(doc)) => Ok(FullDocumentResponse {
+            id: doc._id.to_hex(),
+            user_id: doc.user_id,
+            created_on: doc.created_on,
+            last_modified: doc.last_modified,
+            title: doc.title,
+            content: doc.content,
+        }),
+        _ => Err(MyError::build(404, Some(format!("Can't find a document with _id '{}'", id))))
     }
 }

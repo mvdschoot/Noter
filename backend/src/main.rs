@@ -22,7 +22,10 @@ fn rocket() -> _ {
             openapi_get_routes![
                 routes::index,
                 routes::document::get_documents,
+                routes::document::get_full_document,
                 routes::document::create_document,
+                routes::document::update_document,
+
                 routes::customer::get_customers,
                 routes::customer::get_customer_by_id,
                 routes::customer::post_customer,

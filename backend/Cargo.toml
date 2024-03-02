@@ -14,4 +14,5 @@ dotenv = "0.15.0"
 rocket_okapi = { version = "0.8.0", features = ["swagger"] }
 swagger-ui = "0.1.5"
 futures = "0.3.30"
-schemars = "0.8.16"
+schemars = { version = "0.8.16", features = ["chrono"] }
+chrono = { version = "0.4.34", features = ["serde"] }
