@@ -7,9 +7,8 @@ import { Document } from '../models/document.model';
 @Injectable({
   providedIn: 'root'
 })
-export class NoteEditorService {
-  constructor(
-      private readonly http: HttpClient) {}
+export class EditorService {
+  constructor(private readonly http: HttpClient) {}
 
   getContent(id: string): Observable<Document> {
     return this.http.get<Document>("/api/document/" + id);

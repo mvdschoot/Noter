@@ -6,3 +6,7 @@ export interface Document {
     title: string,
     content: string
 }
+
+export interface Content {
+    content: string
+}

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NoteEditorComponent } from './note-editor.component';
+import { ListComponent } from './list.component';
 
-describe('NoteEditorComponent', () => {
-  let component: NoteEditorComponent;
-  let fixture: ComponentFixture<NoteEditorComponent>;
+describe('NoteListComponent', () => {
+  let component: ListComponent;
+  let fixture: ComponentFixture<ListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoteEditorComponent]
+      imports: [ListComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(NoteEditorComponent);
+    fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

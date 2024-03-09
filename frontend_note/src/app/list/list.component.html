@@ -29,11 +29,11 @@
         <div class="row note-entry">
             <div class="col-2 padding"></div>
 
-            <div class="col-8 note-element">
-                <h2 class="note-title">{{note.title}}</h2>
-                <p class="note-author">{{user_name}}</p>
+            <div class="col-8 card card-body note-element">
+                <h2 class="card-title">{{note.title}}</h2>
+                <p class="card-text">{{user_name}}</p>
+                <a href="{{'/edit/' + note.id}}" class="stretched-link"></a>
             </div>
-
             <div class="col-2 padding"></div>
         </div>
     }

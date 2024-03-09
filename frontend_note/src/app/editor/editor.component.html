@@ -1,0 +1,82 @@
+
+<style>
+    .custom-container {
+        --toolbar-height: calc(100vh / 30);
+    }
+
+    .fill {
+        min-height: 100%;
+        height: 100%;
+    }
+
+    .top-margin {
+        height: calc((100vh / 10) - var(--toolbar-height));
+        background-color: white;
+    }
+
+    .toolbar-div {
+        height: var(--toolbar-height)
+    }
+
+    .bottom-margin {
+        height: calc(100vh / 10);
+        background-color: white;
+    }
+
+
+    .text-field {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0; /* Background color for the text field */
+    }
+
+    .text-field div {
+        width: 90%; /* Adjust as needed */
+        height: 90%; /* Adjust as needed */
+        padding: 10px;
+        border: none;
+        outline: none;
+        resize: none;
+        background-color: transparent; /* Transparent background for the textarea */
+        font-size: 16px;
+        line-height: 1.5;
+        box-sizing: border-box;
+    }
+
+    .full-height {
+        height: calc(100vh / 10*8); /* Adjust to leave some space for margins */
+        resize: none;
+        box-sizing: border-box;
+    }
+</style>
+
+<div class="container-fluid vh-100 custom-container">
+    <div class="row vh-100 " id="textarea-row">
+        <div class="col-2"></div>
+        
+        <div class="col-8 h-100 fill ">
+
+            <div class="row top-margin"></div>
+
+            <div class="toolbar-div">
+                <app-toolbar (commandEmitter)="markdownCommandHandler($event)"></app-toolbar>
+            </div>
+
+            <div class="row">
+                <div class="text-field form-control full-height">
+                    <div #textArea
+                        contenteditable="true"
+                        spellcheck="false" 
+                        (input)="change()"
+                    ></div>
+                </div>
+            </div>
+            <div class="row bottom-margin"></div>
+        </div>
+
+        <div class="col-2"></div>
+    </div>
+</div>

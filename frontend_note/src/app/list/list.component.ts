@@ -1,23 +1,23 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { NoteListService } from '../services/note-list.service';
+import { ListService as ListService } from '../services/list.service';
 import { Document } from '../models/document.model';
 import { NgFor } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { UserService } from '../services/user.service';
 
 @Component({
-  selector: 'app-note-list',
+  selector: 'app-list',
   standalone: true,
   imports: [NgFor, HttpClientModule],
-  templateUrl: './note-list.component.html',
-  styleUrl: './note-list.component.scss'
+  templateUrl: './list.component.html',
+  styleUrl: './list.component.scss'
 })
 
-export class NoteListComponent implements OnInit{
+export class ListComponent implements OnInit{
   notes!: Array<Document>;
   user_name!: String;
 
-  constructor(private readonly listService: NoteListService,
+  constructor(private readonly listService: ListService,
       private readonly userService: UserService) {}
 
   ngOnInit(): void {
@@ -27,5 +27,4 @@ export class NoteListComponent implements OnInit{
 
     this.user_name = this.userService.getUser();
   }
-
 }

@@ -7,7 +7,7 @@ import { Document } from '../models/document.model';
 @Injectable({
   providedIn: 'root'
 })
-export class NoteListService {
+export class ListService {
   public API_URL: string = "localhost:8000";
 
   constructor(
