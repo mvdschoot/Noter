@@ -44,6 +44,7 @@
         font-size: 16px;
         line-height: 1.5;
         box-sizing: border-box;
+        white-space: pre;
     }
 
     .full-height {
@@ -51,12 +52,19 @@
         resize: none;
         box-sizing: border-box;
     }
+    
+    .code {
+        font-family: "courier new";
+        color: crimson;
+        background-color: #ffffff;
+        padding: 2px;
+        font-size: 105%;
+    }
 </style>
 
-<div class="container-fluid vh-100 custom-container">
-    <div class="row vh-100 " id="textarea-row">
+<div class="container-fluid h-100 custom-container">
+    <div class="row h-100 " id="textarea-row">
         <div class="col-2"></div>
-        
         <div class="col-8 h-100 fill ">
 
             <div class="row top-margin"></div>
@@ -71,6 +79,7 @@
                         contenteditable="true"
                         spellcheck="false" 
                         (input)="change()"
+                        (keydown.tab)="$event.preventDefault(); insertTab();"
                     ></div>
                 </div>
             </div>
@@ -80,3 +89,25 @@
         <div class="col-2"></div>
     </div>
 </div>
+
+<ng-template #linkModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Insert link</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="linkForm">
+        <div class="form-group">
+            <label for="link">Link</label>
+            <input ngbAutoFocus type="url" formControlName="link" name="name" class="form-control" id="link" placeholder="URL" formControlName="link" />
+            <br>
+            <label for="placeholder">Placeholder</label>
+            <input type="text" (keyup.enter)="modal.close('Enter click');" formControlName="placeholder" class="form-control" id="placeholder" placeholder="Placeholder" formControlName="placeholder"/>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save button');">Insert</button>
+    </div>
+</ng-template>
+  

@@ -20,6 +20,7 @@ pub async fn get_user_documents(
     let collection = db.collection::<Document>("document");
 
     let find_options = FindOptions::builder()
+        .sort(doc! {"last_modified": -1})
         .limit(limit)
         .skip(u64::try_from((page - 1) * limit).unwrap())
         .build();

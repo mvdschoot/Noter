@@ -57,6 +57,22 @@ export class ToolbarComponent {
     this.commandEmitter.emit(StyleCommand.Link);
   }
 
+  setCode() {
+    this.commandEmitter.emit(StyleCommand.Code);
+  }
+
+  setHeader1() {
+    this.commandEmitter.emit(StyleCommand.Header1);
+  }
+
+  setHeader2() {
+    this.commandEmitter.emit(StyleCommand.Header2);
+  }
+
+  setHeader3() {
+    this.commandEmitter.emit(StyleCommand.Header3);
+  }
+
   @HostListener('mousedown', ['$event'])
   preventFocus(event: MouseEvent) {
     event.preventDefault();

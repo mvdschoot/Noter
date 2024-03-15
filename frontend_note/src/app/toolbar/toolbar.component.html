@@ -19,11 +19,6 @@
         -moz-user-select: none;
         -khtml-user-select: none;
         -webkit-user-select: none;
-
-        /*
-            Introduced in Internet Explorer 10.
-            See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-        */
         -ms-user-select: none;
         user-select: none;
 
@@ -34,41 +29,53 @@
 
     }
 
+    #headers div {
+        border: 1px solid black;
+    }
+
 </style>
 
 
-<div class="toolbar-toolbar-div" unselectable="on" (mousedown)="preventFocus($event)">
-    <div class="undo-div icon-div">
-        <img src="/assets/undo.png" class="icon" (click)="undo()" />
+<div class="toolbar-toolbar-div" >
+    <div id="headers">
+        <div class="icon-div" (click)="setHeader1()">
+            <span class="icon">H<sub>1</sub></span>
+        </div>
+        <div class="icon-div" (click)="setHeader2()">
+            <span class="icon">H<sub>2</sub></span>
+        </div>
+        <div class="icon-div" (click)="setHeader3()">
+            <span class="icon">H<sub>3</sub></span>
+        </div>
     </div>
-    <div class="redo-div icon-div">
-        <img src="/assets/redo.png" class="icon" (click)="redo()" />
+    <div unselectable="on" class="icon-div" (click)="setBold();">
+        <img src="/assets/bold.png" class="icon" />
     </div>
-    <div unselectable="on" class="bold-div icon-div">
-        <img src="/assets/bold.png" class="icon" (click)="$event.preventDefault(); setBold();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setItalic();">
+        <img src="/assets/italic.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/italic.png" class="icon" (click)="$event.preventDefault(); setItalic();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setUnderline();">
+        <img src="/assets/underline.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/underline.png" class="icon" (click)="$event.preventDefault(); setUnderline();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setStrikethrough();">
+        <img src="/assets/strikethrough.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/strikethrough.png" class="icon" (click)="$event.preventDefault(); setStrikethrough();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setBulletList();">
+        <img src="/assets/bullet_list.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/bullet_list.png" class="icon" (click)="$event.preventDefault(); setBulletList();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setNumberedList();">
+        <img src="/assets/numbered_list.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/numbered_list.png" class="icon" (click)="$event.preventDefault(); setNumberedList();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setDeIndent();">
+        <img src="/assets/de_indent.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/de_indent.png" class="icon" (click)="$event.preventDefault(); setDeIndent();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setIndent();">
+        <img src="/assets/indent.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/indent.png" class="icon" (click)="$event.preventDefault(); setIndent();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setLink();">
+        <img src="/assets/link.png" class="icon" />
     </div>
-    <div unselectable="on" class="icon-div">
-        <img src="/assets/link.png" class="icon" (click)="$event.preventDefault(); setLink();" (focus)="$event.preventDefault();"/>
+    <div unselectable="on" class="icon-div" (click)="setCode();">
+        <img src="/assets/code.png" class="icon" />
     </div>
 </div>

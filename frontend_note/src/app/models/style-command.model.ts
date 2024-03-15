@@ -8,5 +8,9 @@ export enum StyleCommand {
     NumberedList,
     Indent,
     DeIndent,
-    Link
+    Link,
+    Code,
+    Header1,
+    Header2,
+    Header3
 }

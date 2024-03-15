@@ -1,30 +1,44 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, TemplateRef, ViewChild, ViewEncapsulation, numberAttribute } from '@angular/core';
 import { EditorService } from '../services/editor.service';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ToolbarComponent } from "../toolbar/toolbar.component";
 import { StyleCommand } from '../models/style-command.model';
-import { mergeWith } from 'rxjs';
+import { NgModule } from '@angular/core';
+
+import {NgbDatepicker, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-editor',
     standalone: true,
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.scss',
-    imports: [FormsModule, ToolbarComponent]
+    imports: [ReactiveFormsModule, ToolbarComponent]
 })
 export class EditorComponent implements OnInit {
   id!: string;
   @ViewChild("textArea") content!: ElementRef;
+  @ViewChild("linkModal") linkModal!: ElementRef;
+  preModalRange: Range | undefined;
+  linkForm = new FormGroup({
+    link: new FormControl(""),
+    placeholder: new FormControl("")
+  });
 
   constructor(private readonly route: ActivatedRoute,
-    private readonly noteService: EditorService) {}
+    private readonly noteService: EditorService,
+    private modalService: NgbModal,
+    private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id")!;
     this.noteService.getContent(this.id).subscribe((doc) => {
       this.content.nativeElement.innerHTML = doc.content;
     })
+  }
+
+  public open(modal: any): void {
+    this.modalService.open(modal);
   }
 
   change(): void {
@@ -58,23 +72,99 @@ export class EditorComponent implements OnInit {
         this.deIndent();
         break;
       case StyleCommand.Link: 
-        this.link();
+        this.openLinkModal();
+        break;
+      case StyleCommand.Code: 
+        this.setCode();
+        break;
+      case StyleCommand.Header1: 
+        this.set("h1");
+        break;
+      case StyleCommand.Header2:
+        this.set("h2");
+        break;
+      case StyleCommand.Header3:
+        this.set("h3");
         break;
     }
   }
 
-  link() {
-    alert("choose link")
+  insertTab() {
+    let tab = document.createTextNode("\u00a0\u00a0\u00a0\u00a0");
+
+    let selection = window.getSelection();
+    selection?.getRangeAt(0).insertNode(tab);
+
+    let newRange = document.createRange();
+    newRange.setStart(tab, 0);
+    selection?.getRangeAt(0).setStart(tab, 4);
+    // selection?.removeAllRanges()
+    // selection?.addRange(newRange);
+  }
+
+  setCode() {
+    this.set("CODE", "code");
+  }
+
+  openLinkModal() {
+    let selection = window.getSelection()!;
+    var preModalRange: Range | undefined;
+    if (selection.rangeCount !== 0) {
+      preModalRange = selection!.getRangeAt(0).cloneRange();
+    }
+
+    this.modalService.open(this.linkModal).result.then((result) => {
+      this.addLink(preModalRange);
+      this.linkForm.controls.link.setValue("");
+      this.linkForm.controls.placeholder.setValue("");
+    })
+  }
+
+  addLink(preModalRange: Range | undefined) {
+    let a = document.createElement("a");
+    a.setAttribute("contenteditable", "false");
+    a.setAttribute("target", "_blank");
+    
+    let link = this.linkForm.controls.link.value;
+    let placeholder = this.linkForm.controls.placeholder.value;
+    if (link == null || placeholder == null) {
+      return;
+    }
+
+    a.href = this.modifyUrl(link);
+    a.innerText = placeholder;
+    preModalRange?.insertNode(a);
+
+    a.insertAdjacentText("afterend", "\ ");;
+
+    let selection = window.getSelection();
+    selection?.removeAllRanges();
+    let newRange = document.createRange();
+    newRange.setStart(a.nextSibling!, 0);
+    selection?.addRange(newRange);
+  }
+
+  modifyUrl(url: string): string {
+    if (url.startsWith("http")) {
+      return url;
+    }
+
+    return "https://" + url;
   }
 
   indent() {
-    let selection = window.getSelection()!;
-    let range = selection.getRangeAt(0);
-    let parent = range.startContainer.parentElement!;
-    let listType = parent.parentElement!.nodeName;
+    let selection = window.getSelection();
+    let range = selection?.getRangeAt(0);
+    let parent = range?.startContainer.parentElement;
 
-    if (parent.nodeName === "LI") {
-      let listElement = document.createElement(listType);
+    if (parent?.nodeName == "SPAN") {
+      parent = parent.parentElement;
+    }
+
+    let listType = parent?.parentElement?.nodeName;
+
+    if (parent?.nodeName === "LI") {
+      let listElement = document.createElement(listType!);
       let listItem = document.createElement("li");
       listItem.innerHTML = parent.innerHTML;
       listElement.appendChild(listItem);
@@ -82,38 +172,48 @@ export class EditorComponent implements OnInit {
 
       let newRange = document.createRange();
       newRange.setStart(listItem, 0);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
+      selection?.removeAllRanges();
+      selection?.addRange(newRange);
+    } else {
+      this.setList("ul");
     }
   }
 
   deIndent() {
-    let selection = window.getSelection()!;
-    let range = selection.getRangeAt(0);
-    let parent = range.startContainer.parentElement!;
+    let selection = window.getSelection();
+    let range = selection?.getRangeAt(0);
+    let parent = range?.startContainer.parentElement;
 
-    if (parent.nodeName === "LI") {
+    if (parent?.nodeName == "SPAN") {
+      parent = parent.parentElement;
+    }
+
+    if (parent?.nodeName == "UL") {
+      parent = parent.lastElementChild as HTMLElement;
+    }
+
+    if (parent?.nodeName === "LI") {
       if (parent.parentElement?.previousElementSibling?.nodeName === "LI") {
         let listItem = document.createElement("li");
         listItem.innerHTML = parent.innerHTML;
-        parent.parentElement!.insertAdjacentElement("afterend", listItem);
+        parent.parentElement?.insertAdjacentElement("afterend", listItem);
+        parent.parentElement?.remove();
+        range?.setStart(listItem, listItem.innerHTML.length);
       } else {
-
         parent.parentElement!.insertAdjacentHTML("afterend", parent.innerHTML);
 
         let newRange = document.createRange();
         newRange.setStart(parent.parentElement!.nextSibling!, 0);
-        selection.removeAllRanges();
-        selection.addRange(newRange);
+        selection?.removeAllRanges();
+        selection?.addRange(newRange);
+        parent.remove();
       }
-      parent.remove();
     }
   }
 
   setList(type: string) {
     let selection = window.getSelection()!;
     let range = selection.getRangeAt(0);
-    let parent = range.startContainer.parentElement!;
 
     if (selection.isCollapsed) {
       let listElement = document.createElement(type);
@@ -141,7 +241,7 @@ export class EditorComponent implements OnInit {
     }
   }
 
-  set(type: string) {
+  set(type: string, ...classes: string[]) {
     let selection = window.getSelection()!;
     let range = selection.getRangeAt(0);
     let parent = range.startContainer.parentElement!;
@@ -181,6 +281,7 @@ export class EditorComponent implements OnInit {
       }  else {
         let styledElement = document.createElement(type);
         styledElement.appendChild(selectedText);
+        styledElement.classList.add(...classes);
 
         range.insertNode(styledElement);
       }
@@ -199,9 +300,12 @@ export class EditorComponent implements OnInit {
         selection.removeAllRanges();
         selection.addRange(newRange);
       } else {
-        let boldElement = document.createElement(type);
-        boldElement.insertAdjacentText("afterbegin", "Sample text");
-        range.insertNode(boldElement);
+        let newElement = this.renderer.createElement(type);
+        for (var class_ of classes) {
+          this.renderer.addClass(newElement, class_);
+        }
+        newElement.insertAdjacentText("afterbegin", "Sample text");
+        range.insertNode(newElement);
       }
     }
   }
