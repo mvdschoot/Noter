@@ -60,3 +60,16 @@ pub async fn update_document(
         Err(e) => Err(e)
     }
 }
+
+#[openapi(tag = "Document")]
+#[delete("/document/<document_id>")]
+pub async fn delete_document(
+    db: &State<Database>,
+    document_id: &str
+) -> Result<(), MyError> {
+    match document::delete_document(&db, document_id).await {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e)
+    }
+}
+

@@ -5,6 +5,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use bson::{doc, Bson, Timestamp};
 use bson::oid::ObjectId;
 use futures::stream::StreamExt;
+use mongodb::results::DeleteResult;
 use mongodb::Database;
 use mongodb::options::FindOptions;
 use crate::errors::response::MyError;
@@ -126,5 +127,22 @@ pub async fn get_full_document(
             content: doc.content,
         }),
         _ => Err(MyError::build(404, Some(format!("Can't find a document with _id '{}'", id))))
+    }
+}
+
+pub async fn delete_document(
+    db: &Database,
+    id: &str
+) -> Result<DeleteResult, MyError> {
+    let collection = db.collection::<Document>("document");
+
+    let filter = match ObjectId::from_str(id) {
+        Ok(obj_id) => doc! {"_id": obj_id},
+        Err(_) => return Err(MyError::build(400, Some(format!("Invalid  ID '{}'", id))))
+    };
+
+    match collection.delete_one(filter, None).await {
+        Ok(res) => Ok(res),
+        Err(err) => Err(MyError::build(404, Some(format!("Failed to delete the document, err is: {}", err))))
     }
 }

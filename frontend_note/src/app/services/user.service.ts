@@ -8,6 +8,6 @@ export class UserService {
   constructor() { }
 
   getUser(): String {
-    return "mathijs";
+    return "Mathijs van der Schoot";
   }
 }

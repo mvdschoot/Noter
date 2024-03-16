@@ -25,6 +25,7 @@ fn rocket() -> _ {
                 routes::document::get_full_document,
                 routes::document::create_document,
                 routes::document::update_document,
+                routes::document::delete_document,
 
                 routes::customer::get_customers,
                 routes::customer::get_customer_by_id,

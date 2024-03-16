@@ -16,26 +16,101 @@
     .note-author {
         color: rgb(81, 81, 81);
     }
+
+    .modify-button-col {
+        display: flex;
+    }
+
+    .modify-button {
+        max-height: 80px;
+        display: flex;
+        align-items: center;
+        border: none;
+        background: none;
+    }
+
+    .modify-button > img { 
+        max-height: 80%;
+    }
+
+    .bottom-margin {
+        min-height: 50px;
+    }
+
+    .top-elements {
+        margin-top: 20px
+    }
+
+    .trash-div {
+        display: none;
+        align-items: center;
+        justify-content: left;
+    }
+
+    .trash-div-show {
+        display: flex;
+    }
+
+    .trash-div > img {
+        max-width: 80%;
+        max-height: 80%;
+    }
+
+    .text-div {
+        position: relative;
+    }
 </style>
 
 <div class="container">
-    <div class="space"></div>
-
     <div class="row top-elements">
+        <div class="col-2 justify-content-center modify-button-col">
+            <button class="modify-button" (click)="this.isShowingTrashCan = !this.isShowingTrashCan;">
+                <img src="/assets/edit.png" alt="Back button">
+            </button>
+        </div>
+        
+        <div class="col-8"></div>
 
+        <div class="col-2 justify-content-center modify-button-col">
+            <button class="modify-button" (click)="openCreateModal()">
+                <img src="/assets/add_note.png" alt="Add button">
+            </button>
+        </div>
     </div>
 
     @for (note of notes; track $index) {
         <div class="row note-entry">
-            <div class="col-2 padding"></div>
-
-            <div class="col-8 card card-body note-element">
-                <h2 class="card-title">{{note.title}}</h2>
-                <p class="card-text">{{user_name}}</p>
-                <a href="{{'/edit/' + note.id}}" class="stretched-link"></a>
+            <div class="card card-body note-element">
+                <div class="row justify-content-between">
+                    <div class="col text-div">
+                        <h2 class="card-title">{{note.title}}</h2>
+                        <p class="card-text">{{user_name}}</p>
+                        <a href="{{'/edit/' + note.id}}" class="stretched-link"></a>
+                    </div>
+                    <div [class.trash-div-show]="isShowingTrashCan" class="col-2 trash-div">
+                        <img src="/assets/trash.png" (click)="this.deleteNote(note.id)"/>
+                    </div>
+                </div>
             </div>
-            <div class="col-2 padding"></div>
         </div>
     }
-
+    <div class="row bottom-margin"></div>
 </div>
+
+<ng-template #createModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Create a new note</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="createForm">
+        <div class="form-group">
+            <label for="link">Title</label>
+            <input ngbAutoFocus type="text" (keyup.enter)="modal.close('Enter click');" formControlName="title" name="name" class="form-control" id="title_input" placeholder="Title" />
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save button');">Insert</button>
+    </div>
+</ng-template>

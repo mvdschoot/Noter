@@ -1,12 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, TemplateRef, ViewChild, ViewEncapsulation, numberAttribute } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { EditorService } from '../services/editor.service';
-import { ActivatedRoute } from '@angular/router';
-import { FormControl, FormGroup, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToolbarComponent } from "../toolbar/toolbar.component";
 import { StyleCommand } from '../models/style-command.model';
-import { NgModule } from '@angular/core';
 
-import {NgbDatepicker, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-editor',
@@ -17,6 +16,7 @@ import {NgbDatepicker, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 })
 export class EditorComponent implements OnInit {
   id!: string;
+  @ViewChild("title") title!: ElementRef;
   @ViewChild("textArea") content!: ElementRef;
   @ViewChild("linkModal") linkModal!: ElementRef;
   preModalRange: Range | undefined;
@@ -28,21 +28,18 @@ export class EditorComponent implements OnInit {
   constructor(private readonly route: ActivatedRoute,
     private readonly noteService: EditorService,
     private modalService: NgbModal,
-    private renderer: Renderer2) {}
+    public router: Router) {}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id")!;
     this.noteService.getContent(this.id).subscribe((doc) => {
+      this.title.nativeElement.innerHTML = doc.title;
       this.content.nativeElement.innerHTML = doc.content;
     })
   }
 
-  public open(modal: any): void {
-    this.modalService.open(modal);
-  }
-
   change(): void {
-    this.noteService.updateContent(this.id!, this.content.nativeElement.innerHTML!).subscribe((_) => {return;});
+    this.noteService.updateContent(this.id!, this.title.nativeElement.innerHTML!, this.content.nativeElement.innerHTML!).subscribe((_) => {return;});
   }
 
   markdownCommandHandler(event: StyleCommand) {
@@ -300,9 +297,9 @@ export class EditorComponent implements OnInit {
         selection.removeAllRanges();
         selection.addRange(newRange);
       } else {
-        let newElement = this.renderer.createElement(type);
+        let newElement = document.createElement(type);
         for (var class_ of classes) {
-          this.renderer.addClass(newElement, class_);
+          newElement.classList.add(class_);
         }
         newElement.insertAdjacentText("afterbegin", "Sample text");
         range.insertNode(newElement);
