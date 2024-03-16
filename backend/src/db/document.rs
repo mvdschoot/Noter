@@ -1,8 +1,8 @@
-use std::fmt::format;
+
 use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use bson::{doc, Bson, Timestamp};
+use bson::{doc};
 use bson::oid::ObjectId;
 use futures::stream::StreamExt;
 use mongodb::results::DeleteResult;
