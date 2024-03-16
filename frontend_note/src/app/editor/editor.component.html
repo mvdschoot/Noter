@@ -16,9 +16,12 @@
         width: 100%;
         /* display: flex; */
         background-color: #f0f0f0; /* Background color for the text field */
+        flex-shrink: 1;
+        margin: 0px 10px;
     }
 
     .text-field > div {
+        margin: 10px;
         padding: 10px;
         border: none;
         outline: none;
@@ -57,6 +60,12 @@
         /* display: flex; */
         align-items: center;
         justify-content: center;
+        text-align: center;
+    }
+
+    .container-md {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
 </style>
@@ -82,7 +91,7 @@
         <app-toolbar (commandEmitter)="markdownCommandHandler($event)"></app-toolbar>
     </div>
     <div class="row mt-3">
-        <div class="text-field form-control full-height">
+        <div class="text-field form-control">
             <div #textArea
                 contenteditable="true"
                 spellcheck="false" 
@@ -95,22 +104,21 @@
 
 <ng-template #linkModal let-modal>
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Insert link</h4>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        <h4 class="modal-title" id="modal-basic-title">Insert link</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
-      <form [formGroup]="linkForm">
-        <div class="form-group">
-            <label for="link">Link</label>
-            <input ngbAutoFocus type="url" formControlName="link" name="name" class="form-control" id="link" placeholder="URL" formControlName="link" />
-            <br>
-            <label for="placeholder">Placeholder</label>
-            <input type="text" (keyup.enter)="modal.close('Enter click');" formControlName="placeholder" class="form-control" id="placeholder" placeholder="Placeholder" formControlName="placeholder"/>
-        </div>
-      </form>
+		<form [formGroup]="linkForm">
+			<div class="form-group">
+				<label for="link">Link</label>
+				<input ngbAutoFocus type="url" formControlName="link" name="name" class="form-control" id="link" placeholder="URL" formControlName="link" />
+				<br>
+				<label for="placeholder">Placeholder</label>
+				<input type="text" (keyup.enter)="modal.close('Enter click');" formControlName="placeholder" class="form-control" id="placeholder" placeholder="Placeholder" formControlName="placeholder"/>
+			</div>
+		</form>
     </div>
     <div class="modal-footer">
-      <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save button');">Insert</button>
+        <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save button');">Insert</button>
     </div>
 </ng-template>
-  

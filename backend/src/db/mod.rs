@@ -4,7 +4,6 @@ use mongodb::{Client, Database};
 use rocket::fairing::AdHoc;
 use std::env;
 
-pub mod customer;
 pub mod document;
 
 pub fn init() -> AdHoc {

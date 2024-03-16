@@ -9,7 +9,6 @@ mod db;
 mod errors;
 mod fairings;
 mod models;
-mod request_guards;
 mod routes;
 
 #[launch]
@@ -20,18 +19,11 @@ fn rocket() -> _ {
         .mount(
             "/",
             openapi_get_routes![
-                routes::index,
                 routes::document::get_documents,
                 routes::document::get_full_document,
                 routes::document::create_document,
                 routes::document::update_document,
                 routes::document::delete_document,
-
-                routes::customer::get_customers,
-                routes::customer::get_customer_by_id,
-                routes::customer::post_customer,
-                routes::customer::patch_customer_by_id,
-                routes::customer::delete_customer_by_id
             ],
         )
         .mount(

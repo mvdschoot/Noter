@@ -5,25 +5,19 @@ use rocket_okapi::okapi::openapi3::{MediaType, Responses};
 use rocket_okapi::response::OpenApiResponderInner;
 use rocket_okapi::OpenApiError;
 
-/// error type
 #[derive(Debug, serde::Serialize, schemars::JsonSchema)]
 pub struct ErrorContent {
-    // HTTP Status Code returned
     code: u16,
-    // Reason for an error
     reason: String,
-    // Description for an error if any
     description: Option<String>,
 }
 
-/// Error messages returned to user
 #[derive(Debug, serde::Serialize, schemars::JsonSchema)]
 pub struct MyError {
     pub error: ErrorContent,
 }
 
 impl MyError {
-    // building a custom error.
     pub fn build(code: u16, description: Option<String>) -> MyError {
         let reason: String;
         match code {
@@ -41,31 +35,12 @@ impl MyError {
     }
 }
 
-/// Create my custom response
 pub fn bad_request_response(gen: &mut OpenApiGenerator) -> okapi::openapi3::Response {
     let schema = gen.json_schema::<MyError>();
     okapi::openapi3::Response {
         description: "\
         # 400 Bad Request\n\
         The request given is wrongly formatted or data was missing. \
-        "
-        .to_owned(),
-        content: okapi::map! {
-            "application/json".to_owned() => MediaType {
-                schema: Some(schema),
-                ..Default::default()
-            }
-        },
-        ..Default::default()
-    }
-}
-
-pub fn unauthorized_response(gen: &mut OpenApiGenerator) -> okapi::openapi3::Response {
-    let schema = gen.json_schema::<MyError>();
-    okapi::openapi3::Response {
-        description: "\
-        # 401 Unauthorized\n\
-        The authentication given was incorrect or insufficient. \
         "
         .to_owned(),
         content: okapi::map! {
@@ -96,8 +71,6 @@ impl OpenApiResponderInner for MyError {
         Ok(Responses {
             responses: okapi::map! {
                 "400".to_owned() => RefOr::Object(bad_request_response(gen)),
-                // Note: 401 is already declared for ApiKey. so this is not essential.
-                // "401".to_owned() => RefOr::Object(unauthorized_response(gen)),
             },
             ..Default::default()
         })

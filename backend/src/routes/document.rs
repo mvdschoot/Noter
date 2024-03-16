@@ -1,13 +1,12 @@
 
 use mongodb::Database;
-use mongodb::results::InsertOneResult;
 use rocket::serde::json::Json;
 use rocket::State;
 use rocket_okapi::openapi;
 
-use crate::db::{customer, document};
+use crate::db::document;
 use crate::errors::response::MyError;
-use crate::models::document::{Document, DocumentCreateRequest, DocumentPreviewResponse, DocumentUpdateRequest, FullDocumentResponse};
+use crate::models::document::{DocumentCreateRequest, DocumentPreviewResponse, DocumentUpdateRequest, FullDocumentResponse};
 
 #[openapi(tag = "Document")]
 #[get("/documents/<user_id>?<limit>&<page>")]

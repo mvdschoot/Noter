@@ -1,0 +1,35 @@
+# The compose file that I use. Note that this compose file is tightly 
+# coupled with the Dockerfile's in the directies and the nginx.conf file.
+
+version: "3.8"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  backend:
+    container_name: note-backend
+    image: docker.io/home/note-backend
+    restart: always
+    ports:
+      - "8000:8000"
+
+  frontend:
+    container_name: note-frontend
+    image: docker.io/home/note-frontend
+    restart: always
+    ports:
+      - "8001:80"
+
+  mongo:
+    container_name: note-mongo
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo_data:/data/db
